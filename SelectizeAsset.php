@@ -6,7 +6,7 @@ class SelectizeAsset extends \yii\web\AssetBundle
 	public $sourcePath = '@vendor/bower/selectize/dist';
 	
 	public $js         = [
-		'js/selectize.js' => 'js/selectize.min.js',
+		'js/selectize.js' => 'js/standalone/selectize.min.js',
 	];
 
 	public $css        = [
