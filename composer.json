@@ -1,5 +1,5 @@
 {
-    "name":        "e-frank/yii2-selectivity",
+    "name":        "e-frank/yii2-selectize",
     "description": "Selectize InputWidget for yii2",
     "keywords":    ["yii2", "javascript", "selectize", "dropdown", "dropdownlist", "ajax"],
     "type":        "yii2-extension",
@@ -7,7 +7,7 @@
     "authors": [
         {
             "name":     "Elmar Frank",
-            "homepage": "http://yii.efrank.at/extension/selectivity"
+            "homepage": "http://yii.efrank.at/extension/selectize"
         }
     ],
     "require": {
