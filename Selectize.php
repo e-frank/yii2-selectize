@@ -25,7 +25,7 @@ class Selectize extends \yii\widgets\InputWidget {
 
     public function init() {
         parent::init();
-        SelectivityAsset::register($this->view);
+        SelectizeAsset::register($this->view);
     }
 
 }
