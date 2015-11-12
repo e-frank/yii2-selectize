@@ -1,0 +1,19 @@
+{
+    "name":        "e-frank/yii2-selectivity",
+    "description": "Selectize InputWidget for yii2",
+    "keywords":    ["yii2", "javascript", "selectize", "dropdown", "dropdownlist", "ajax"],
+    "type":        "yii2-extension",
+    "license":     "BSD-3-Clause",
+    "authors": [
+        {
+            "name":     "Elmar Frank",
+            "homepage": "http://yii.efrank.at/extension/selectivity"
+        }
+    ],
+    "require": {
+        "bower-asset/selectize":  "*"
+    },
+    "autoload": {
+        "psr-4": { "x1\\selectize\\": "" }
+    }
+}
