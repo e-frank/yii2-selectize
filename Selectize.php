@@ -10,11 +10,49 @@ use yii\web\View;
 use yii\helpers\Url;
 
 
+/**
+ *     <?= $form->field($model, 'title')->widget(\x1\selectize\Selectize::className(), [
+ *         // 'items' => [['id' => 1, 'text' => 'xxx'], ['id' => 2, 'text' => 'zzz']],
+ *        'ajax'      => Url::to(['site/demo2'], true),
+ *        'onchange'  => new JsExpression(<<<EOD
+ *              function(selected, value) {
+ *                  console.log("selected", selected, value);
+ *              }
+ *EOD
+ *         ),
+ *        'templateId' => 'item-template',
+ *        'options'    => [
+ *            'create'              => new JsExpression(<<<EOD
+ *                function(input) {
+ *                    return {
+ *                        id:    978,
+ *                        text:  input,
+ *                        other: 123,
+ *                    }
+ *                }
+ *EOD
+ *            ),
+ *            'allowEmptyOption' => true,
+ *        ]
+ *    ]) ?>
+ */
+
+/**
+ * <!-- handlebar template for item option --!>
+ * <script id="item-template" type="text/x-handlebars-template">
+ *    <div class="item">
+ *        <b>{{id}}</b>
+ *        <div style="text-transform: uppercase">
+ *            {{text}}
+ *        </div>
+ *    </div>
+ *</script>
+ */
 class Selectize extends \yii\widgets\InputWidget {
 
     public static $autoIdPrefix  = 'selectize';
 
-    public $items        = [];
+    public $items      = [];
     public $selection    = null;
     public $prompt       = null;
     public $inputOptions = ['class' => 'selectize'];
@@ -25,14 +63,11 @@ class Selectize extends \yii\widgets\InputWidget {
     public $valueField   = 'id';
     public $labelField   = 'text';
     public $searchField  = 'text';
+    public $onchange     = null;
 
     public function run() {
 
-        $view = $this->view;
-
-
-
-
+        $view         = $this->view;
         $templateCode = '';
 
         if ($this->template !== null || $this->templateId !== null) {
@@ -70,6 +105,15 @@ EOD
 , $this->ajax, $this->method, ($this->options['preload'] ? '' : 'if (!query.length) return callback();')));
         }
 
+        if ($this->onchange !== null) {
+            $this->options['onChange'] = new JsExpression(sprintf('function(value) {
+                var self     = this; 
+                var selected = $.map(this.items, function(value) {
+                    return self.options[value];
+                });
+                (%s)(selected, value);
+            }', $this->onchange));
+        }
 
         $view->registerJs(sprintf("$('#%1\$s').selectize(%2\$s);", $this->id, Json::encode($this->options)), View::POS_READY);
 
@@ -79,16 +123,10 @@ EOD
 
         $options                       = [];
         $this->inputOptions['options'] = [];
-        foreach ($this->items as $value) {
-            $options[$value[$this->options['valueField']]]                       = $value[$this->options['labelField']];
-            $this->inputOptions['options'][$value[$this->options['valueField']]] = ['data-data' => Json::encode($value)];
-        }
 
         return Html::dropDownList($this->inputOptions['name'], $this->selection, $options, $this->inputOptions);
-
-        if (false && empty($this->items))
-            return Html::input('text', $this->inputOptions['name'], $this->selection, $this->inputOptions);
     }
+
 
     public function init() {
         parent::init();
@@ -101,11 +139,16 @@ EOD
             $this->options['searchField'] = $this->searchField;
 
         // load field's value, if no default data is set
-        if (!isset($this->options['items']) && $this->items == null) {
-            $value = $this->model->{$this->attribute};
-            if ($value !== null)
-                $this->options['items'] = $value;
+        if (!isset($this->options['options'])) {
+            $this->options['options'] = $this->items;
         }
+
+
+        // default value
+        $value = $this->model->{$this->attribute};
+        if ($value !== null)
+            $this->options['items'] = is_array($value) ? $value : [$value];
+
 
         $this->options['preload'] = ArrayHelper::getValue($this->options, 'preload', empty($this->items));;
 
